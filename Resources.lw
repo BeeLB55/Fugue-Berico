@@ -3,9 +3,10 @@
 # "composition" statement in the beginning and there's a resource section. 
 #The ec2_launch.lw script directly refrences the script and the resources section below.
 
-import Fugue.AWS as AWS
-import Fugue.AWS.EC2 as EC2
-import Fugue.AWS.IAM as IAM
+import 
+  Fugue.AWS as AWS
+  Fugue.AWS.EC2 as EC2
+  Fugue.AWS.IAM as IAM
 
 #This section lables each resource labled in the script which can be used along with other scripts.
 resources: (
