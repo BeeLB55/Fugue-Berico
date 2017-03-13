@@ -1,0 +1,231 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.EC2 as EC2
+import Fugue.AWS.IAM as IAM
+
+#Creates a new VPC tagged Dev Account in the west
+dev-vpc: EC2.Vpc.new {
+  cidrBlock: "10.0.0.0/16",
+  tags: [
+    AWS.tag("Name",
+            "Dev Account")
+  ],
+  region: AWS.Us-west-2
+}
+
+#This will create tags you can reference through out the script.
+fugue-dev: AWS.tag("Name", "Fugue made VPC")
+bastion-tag: AWS.tag("Name", "Bastion")
+nat-tag: AWS.tag("Name", "NAT")
+
+#The following section creates 2 public Subnets and 2 Private Subnets (Pub IP launch =False)
+public-subnet-A: EC2.Subnet.new {
+  cidrBlock: '10.0.0.0/19',
+  vpc: dev-vpc,
+  availabilityZone: AWS.A,
+  mapPublicIpOnLaunch: True,
+  defaultForAz: False
+}
+
+public-subnet-B: EC2.Subnet.new {
+  cidrBlock: '10.0.64.0/19',
+  vpc: dev-vpc,
+  availabilityZone: AWS.B,
+  mapPublicIpOnLaunch: True,
+  defaultForAz: False
+}
+
+private-subnet-A: EC2.Subnet.new {
+  cidrBlock: '10.0.32.0/20',
+  vpc: dev-vpc,
+  availabilityZone: AWS.A,
+  mapPublicIpOnLaunch: False,
+  defaultForAz: False
+}
+
+private-subnet-B: EC2.Subnet.new {
+  cidrBlock: '10.0.96.0/20',
+  vpc: dev-vpc,
+  availabilityZone: AWS.B,
+  mapPublicIpOnLaunch: False,
+  defaultForAz: False
+}
+
+#This creates an IGW
+dev-igw: EC2.InternetGateway.new {
+  vpc: dev-vpc
+}
+
+#This will create a new NatGateway with EIP.
+nat:EC2.NatGateway.new {
+  subnet: public-subnet-A,
+  elasticIP: eip
+}
+
+eip: EC2.ElasticIP.new {
+  region: AWS.Us-west-2
+}
+
+#This section creates the routing tables and associates the table with the appropriate subnets
+public-route: EC2.Route.new {
+  destinationCidrBlock: "0.0.0.0/0",
+  target: EC2.GatewayTarget(dev-igw)
+}
+
+private-route: EC2.Route.new {
+  destinationCidrBlock: "0.0.0.0/0",
+  target: EC2.NatTarget(nat)
+}
+
+public-route-table: EC2.RouteTable.new {
+  vpc: dev-vpc,
+  routes: [public-route],
+  associations: [
+    public-subnet-A,
+    public-subnet-B
+  ]
+}
+
+private-route-table: EC2.RouteTable.new {
+  vpc: dev-vpc,
+  routes: [private-route],
+  associations: [
+    private-subnet-A,
+    private-subnet-B
+  ]
+}
+
+#This section creates your Security Groups
+bastion-sg: EC2.SecurityGroup.new {
+  description: "Allow ssh traffic from the customer",
+  ipPermissions: [
+    inet-ssh,
+  ],
+  ipPermissionsEgress: None,
+  tags: [bastion-tag],
+  vpc: dev-vpc
+}
+
+inet-ssh: EC2.IpPermission.new {
+  ipProtocol: "tcp",
+  fromPort: 22,
+  toPort: 22,
+  target: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "Your IP")
+  ])
+}
+
+#This section will launch a Bastion.
+bastion: EC2.Instance.new {
+  instanceType: EC2.T2_micro,
+  subnet: public-subnet-A,
+  image: "ami-f173cc91",
+  keyName: "oregon-key",
+  securityGroups: [bastion-sg],
+  iamInstanceProfile: myProfile,
+  tags: [bastion-tag],
+  monitoring: False
+}
+
+#This section creates an Instance Role with a inline policy
+myPolicy: IAM.Policy.new {
+  policyName: "my-policy",
+  policyDocument: '{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1476315015000",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:DescribeStacks",
+                "cloudwatch:*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1476315036000",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeImages",
+                "ec2:DescribeInstances"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1476315663000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1476315108000",
+            "Effect": "Allow",
+            "Action": [
+                "sns:ListTopics"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "Stmt1476315123000",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:CreateQueue",
+                "sqs:GetQueueUrl",
+                "sqs:SendMessage",
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Query"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:us-east-1:*:table/fugue-cli-responses"
+            ]
+        },
+        {
+            "Sid": "Stmt1484850039000",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}',
+}
+
+myRole: IAM.Role.new {
+  roleName: "my-role",
+  rolePolicies: [myPolicy],
+  assumeRolePolicyDocument: '{
+  "Version": "2012-10-17",
+  "Statement": {
+    "Effect": "Allow",
+    "Principal": {"Service": "ec2.amazonaws.com"},
+    "Action": "sts:AssumeRole"
+  }
+}',
+}
+myProfile: IAM.InstanceProfile.new {
+  instanceProfileName: "myProfile",
+  roles: [myRole],
+}
