@@ -1,8 +1,9 @@
 composition
 
-import Fugue.AWS as AWS
-import Fugue.AWS.EC2 as EC2
-import Fugue.AWS.IAM as IAM
+import 
+  Fugue.AWS as AWS
+  Fugue.AWS.EC2 as EC2
+  Fugue.AWS.IAM as IAM
 
 #Creates a new VPC tagged Dev Account in the west
 dev-vpc: EC2.Vpc.new {
