@@ -112,7 +112,7 @@ inet-ssh: EC2.IpPermission.new {
   fromPort: 22,
   toPort: 22,
   target: EC2.IpRanges([
-    EC2.IpRange(cidrIp: "96.86.16.33/32")
+    EC2.IpRange(cidrIp: "Your IP")
   ])
 }
 nat-sg: EC2.SecurityGroup.new {
@@ -148,7 +148,7 @@ nat-ssh: EC2.IpPermission.new {
   fromPort: 22,
   toPort: 22,
   target: EC2.IpRanges([
-    EC2.IpRange(cidrIp: "96.86.16.33/32")
+    EC2.IpRange(cidrIp: "Your IP")
   ])
 }
 
