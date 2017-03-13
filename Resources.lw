@@ -22,6 +22,7 @@ resources: (
   private-route-table,
   myRole
 )
+
 #Creates a new VPC tagged Dev Account in the west
 dev-vpc: EC2.Vpc.new {
   cidrBlock: "10.0.0.0/16",
