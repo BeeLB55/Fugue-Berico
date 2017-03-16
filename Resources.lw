@@ -8,7 +8,7 @@ import
   Fugue.AWS.EC2 as EC2
   Fugue.AWS.IAM as IAM
 
-#This section lables each resource labled in the script which can be used along with other scripts.
+#This section lables each resource in the script, which can be refernced along with other compositions.
 resources: (
   dev-vpc,
   public-subnet-A,
