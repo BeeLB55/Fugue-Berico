@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources: 
+  ApplicationCatalog: 
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "id"
+          AttributeType: "S"
+        - 
+          AttributeName: "application_name"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "id"
+          KeyType: "HASH"
+        - 
+          AttributeName: "application_name"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalog"
+  ApplicationCatalogAccounts: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalog
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "accountID"
+          AttributeType: "S"
+        - 
+          AttributeName: "invoiceDate"
+          AttributeType: "N"
+      KeySchema: 
+        - 
+          AttributeName: "accountID"
+          KeyType: "HASH"
+        - 
+          AttributeName: "invoiceDate"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalogAccounts"
+  ApplicationCatalogAccountsFyear: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalogAccounts
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "accountID"
+          AttributeType: "S"
+        - 
+          AttributeName: "fiscalYear"
+          AttributeType: "N"
+      KeySchema: 
+        - 
+          AttributeName: "accountID"
+          KeyType: "HASH"
+        - 
+          AttributeName: "fiscalYear"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalogAccountsFyear"
+  ApplicationCatalogFiscalYear: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalogAccountsFyear
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "fiscalYear"
+          AttributeType: "N"
+      KeySchema: 
+        - 
+          AttributeName: "fiscalYear"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalogFiscalYear"
+  ApplicationCatalogInvoices: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalogFiscalYear
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "invoiceID"
+          AttributeType: "S"
+        - 
+          AttributeName: "invoiceDate"
+          AttributeType: "N"
+      KeySchema: 
+        - 
+          AttributeName: "invoiceID"
+          KeyType: "HASH"
+        - 
+          AttributeName: "invoiceDate"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalogInvoices"
+  ApplicationCatalogStatus: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalogInvoices
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "id"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "id"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "6"
+      TableName: "ApplicationCatalogStatus"
