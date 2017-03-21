@@ -119,3 +119,19 @@ Resources:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "6"
       TableName: "ApplicationCatalogStatus"
+  OrganizationCatalog: 
+    Type: "AWS::DynamoDB::Table"
+    DependsOn: ApplicationCatalogStatus
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "org_name"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "org_name"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      TableName: "OrganizationCatalog"
