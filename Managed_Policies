@@ -1,0 +1,14 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.IAM as IAM
+
+fugue-installer: IAM.ManagedPolicy.new {
+  policyName: 'fugue-installers',
+  policyDocument: String.readFileUtf8('Policies/fugue_installer.json'),
+}
+
+fugue-user:  IAM.ManagedPolicy.new {
+  policyName: 'fugue-users',
+  policyDocument: String.readFileUtf8('Policies/fugue_user.json'),
+}
