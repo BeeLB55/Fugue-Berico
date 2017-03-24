@@ -177,89 +177,10 @@ nat: EC2.Instance.newWithNetworkInterfaces {
 }
 
 
-#This section creates an Instance Role with a inline policy
+#This section creates an Instance Role with a inline policy, the .json file should be on your server.
 myPolicy: IAM.Policy.new {
   policyName: "my-policy",
-  policyDocument: '{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "Stmt1476315015000",
-            "Effect": "Allow",
-            "Action": [
-                "cloudformation:DescribeStacks",
-                "cloudwatch:*"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Sid": "Stmt1476315036000",
-            "Effect": "Allow",
-            "Action": [
-                "ec2:DescribeImages",
-                "ec2:DescribeInstances"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Sid": "Stmt1476315663000",
-            "Effect": "Allow",
-            "Action": [
-                "s3:*"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Sid": "Stmt1476315108000",
-            "Effect": "Allow",
-            "Action": [
-                "sns:ListTopics"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Sid": "Stmt1476315123000",
-            "Effect": "Allow",
-            "Action": [
-                "sqs:CreateQueue",
-                "sqs:GetQueueUrl",
-                "sqs:SendMessage",
-                "sqs:ReceiveMessage",
-                "sqs:DeleteMessage"
-            ],
-            "Resource": [
-                "*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:Query"
-            ],
-            "Resource": [
-                "arn:aws:dynamodb:us-east-1:*:table/fugue-cli-responses"
-            ]
-        },
-        {
-            "Sid": "Stmt1484850039000",
-            "Effect": "Allow",
-            "Action": [
-                "kms:Decrypt"
-            ],
-            "Resource": [
-                "*"
-            ]
-        }
-    ]
-}',
+  policyDocument: String.readFileUtf8('Policies/fugue_installer.json'),
 }
 
 myRole: IAM.Role.new {
