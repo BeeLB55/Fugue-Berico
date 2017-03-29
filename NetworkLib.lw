@@ -20,7 +20,6 @@ resources: (
   bastion-sg,
   public-route-table,
   private-route-table,
-  myProfile
 )
 
 #Creates a new VPC tagged Dev Account in the west
@@ -161,7 +160,7 @@ nat-ssh: EC2.IpPermission.new {
   ])
 }
 
-#This section will launch a Bastion and Nat EC2 instance.
+#This section will launch a Bastion and Nat instance with EIP attached.
 bastion: EC2.Instance.new {
   instanceType: EC2.T2_micro,
   subnet: public-subnet-A,
