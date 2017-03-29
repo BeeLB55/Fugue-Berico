@@ -3,6 +3,7 @@ composition
 import Fugue.AWS as AWS
 import Fugue.AWS.IAM as IAM
 
+#The following will create two managed policies. The policyDocument points to a directory I'm currently storing the .json files.
 fugue-installer: IAM.ManagedPolicy.new {
   policyName: 'fugue-installers',
   policyDocument: String.readFileUtf8('Policies/fugue_installer.json'),
