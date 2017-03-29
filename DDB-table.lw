@@ -1,0 +1,21 @@
+composition
+
+import Fugue.AWS.DynamoDB as DDB
+import Fugue.AWS as AWS
+
+application-table: DDB.Table.new {
+  name: "ApplicationCatalog",
+  attributes: {
+    "id": DDB.S,
+    "application_name": DDB.S,
+  },
+  schema: {
+    "id": DDB.RANGE,
+    "application_name": DDB.HASH,
+  },
+  provisionedThroughput: {
+    read: 5,
+    write:6,
+  },
+  region: AWS.Us-west-2
+}
