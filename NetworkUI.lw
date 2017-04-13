@@ -1,0 +1,63 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.EC2 as EC2
+
+#########################
+# NETWORKS
+#########################
+
+${vpc}: EC2.Vpc.new {
+  cidrBlock: "${vpc_cidr}",
+  tags: [application-tag],
+  dhcpOptions: "dhcp-options",
+  region: ${region},
+}
+
+#This will create the Subnets
+${subnet1}: EC2.Subnet.new {
+  cidrBlock: "${subnet1_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${subnet1_az},
+  mapPublicIpOnLaunch: ${subnet1_mapPublicIp},
+  defaultForAz: ${subnet1_defaultForAz}
+}
+
+#This will create the routing table
+${private-route-table1}: EC2.RouteTable.new {
+  vpc: ${vpc},
+  routes: [routetable],
+  routePropagatingVpnGateways:
+  associations: [
+    subnet1
+  ]
+}
+
+${dhcp-options}: EC2.DhcpOptions.new {
+  tags: [application-tag],
+  domainNameServers: ${dhcp-options_domainNameServers},
+  domainName: ${dhcp-options_domainName},
+  ntpServers: ${dhcp-options_ntpServers}
+}
+
+#This section creates your Security Groups
+bastion-sg: EC2.SecurityGroup.new {
+  description: "Allow ssh traffic from the customer",
+  ipPermissions: [
+    inet-ssh,
+  ],
+  ipPermissionsEgress: None,
+  tags: [bastion-tag],
+  vpc: dev-vpc
+}
+
+inet-ssh: EC2.IpPermission.new {
+  ipProtocol: "tcp",
+  fromPort: 22,
+  toPort: 22,
+  target: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "xx IP")
+  ])
+}
+
+application-tag: AWS.tag("Application", "${tag_application}")
