@@ -1,0 +1,98 @@
+label=Example 1
+description=Simple Example to create a VPC and Subnet managed by compliance server
+
+vpc.type=STRING
+vpc.label=Account VPC
+vpc.description=Name of the VPC to be created for this account
+
+vpc.cidr.type=CIDR
+vpc.cidr.label=VPC CIDR Mask
+vpc.cidr.description=CIDR Mask to be used for the VPC
+
+vpc.dhcp.type=DHCP
+vpc.dhcp.label=DHCP Option set
+vpc.dhcp.description=DHCP Option set used to connect to DC's and NTP server
+
+subnet1.type=STRING
+subnet1.label=Subnet Name
+subnet1.description=Name of the first subnet for this VPC
+
+subnet1.cidr.type=CIDR
+subnet1.cidr.label=Subnet CIDR Mask
+subnet1.cidr.description=CIDR Mask to be used for this subnet
+
+subnet1.az.type=AZ
+subnet1.az.label=Subnet AZ
+subnet1.az.description=Select an AZ for this subnet
+
+subnet1.mapPublicIp.type=BOOLEAN
+subnet1.mapPublicIp.label=Map Public IP
+subnet1.mapPublicIp.description=Do you want to map the public IP for this subnet?
+
+subnet1.defaultForAz.type=BOOLEAN
+subnet1.defaultForAz.label=Default Subnet
+subnet1.defaultForAz.description=Do you want this to be the default subnet for this VPC?
+
+dhcp-options.type=STRING
+dhcp-options.label=DHCP Option set
+dhcp-options.description=DHCP Option set used to connect to DC's and NTP server
+
+dhcp-options.domainNameServers.type=STRING
+dhcp-options.domainNameServers.label=DC's ip's
+dhcp-options.domainNameServers.description=Ip's to DC's needed to join servers to the doamin
+
+dhcp-options.domainName.type=STRING
+dhcp-options.domainName.label=Domain Naming convention
+dhcp-options.domainName.description=Domain Naming convention to use when joining servers to the domain
+
+dhcp-options.ntpServers.type=STRING
+dhcp-options.ntpServers.label=NTP Server IP's
+dhcp-options.ntpServers.description=IP's to NTP servers
+
+customergw1.type=STRING
+customergw1.label=Customer Gateway connection
+customergw1.description-Customer Gateway connection to on premise base resources
+
+customergw1.bgpAsn.type=INT
+customergw1.bgpAsn.label=BGP ASN for your device
+customergw1.bgpAsn.description=The BGP ASN for your device. Use a value in the private range, 64,512 to 65,534, if your device does not support BGP
+
+customergw1.ipAddress.type=STRING
+customergw1.ipAddress.label=IP address of the device
+customergw1.ipAddress.description=IP address of the device. Must be a static, publicly routable address.
+
+vpngw.type=STRING
+vpngw.label=VPN Gateway
+vpngw.description=VPN connection to on premise base resources
+
+vpngw.vpnType.type=VPNGWTYPE
+vpngw.vpnType.label=Vpn connection to support
+vpngw.vpnType.description=Vpn connection to support. `EC2.Ipsec_1` is currently the only supported value.
+
+vpnconnection1.type=STRING
+vpnconnection1.label=VPN connection
+vpnconnection1.descritpion=VPN connection between a VPN GW and a Customer GW
+
+routetable.type=STRING
+routetable.label=Routing Table
+routetable.description=VPC Route table to route network traffic between subnets
+
+securitygroup.type=STRING
+securitygroup.label=Security Group
+securitygroup.description-Stateless instance level firewall
+
+securitygroup.description.type=STRING
+securitygroup.description.label=Security Group description
+securitygroup.description.description=Use this section explaining what the security group is allowing/denying.
+
+securitygroup.ipPermission.type=IPPERMISSION
+securitygroup.ipPermission.label=SG Ingress Ip's and ports
+securitygroup.ipPermission.description=SG Ingress IP's and ports that are allowed or explicitly denied
+
+securitygroup.ipPermissionEgress.type=IPPERMISSION
+securitygroup.ipPermissionEgress.label=SG Egress IP's and ports
+securitygroup.ipPermissionEgress.description=SG Egress IP's and ports that are allowed or explicitly denied
+
+tag.application.type=STRING
+tag.application.label=Tag(application)
+tag.application.description=Application Tag for your resources
