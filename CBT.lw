@@ -1,0 +1,132 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.EC2 as EC2
+
+#Create a new DHCP Options set
+cbt-dhcp-options: EC2.DhcpOptions.new {
+  tags: [cbt],
+  domainNameServers: ["5.5.5.5"],
+  domainName: "dashboard.yo",
+  ntpServers: ["4.4.4.4"],
+  region: AWS.Us-west-2
+}
+
+
+#Creates a new VPC tagged Dev Account in the west
+dev-vpc: EC2.Vpc.new {
+  cidrBlock: "10.0.0.0/16",
+  tags: [
+    AWS.tag("Name",
+            "Dev Account")
+  ],
+  region: AWS.Us-west-2,
+  dhcpOptions: cbt-dhcp-options
+}
+
+#This will create tags you can reference through out the script.
+application: AWS.tag("Application", "My Application")
+cbt: AWS.tag("Name", "CBT")
+nat-tag: AWS.tag("Name", "NAT")
+
+#The following section creates 2 public Subnets and 2 Private Subnets (Pub IP launch =False)
+
+private-subnet-A: EC2.Subnet.new {
+  cidrBlock: '10.0.32.0/20',
+  vpc: dev-vpc,
+  availabilityZone: AWS.A,
+  mapPublicIpOnLaunch: False,
+  defaultForAz: False
+}
+
+private-subnet-B: EC2.Subnet.new {
+  cidrBlock: '10.0.96.0/20',
+  vpc: dev-vpc,
+  availabilityZone: AWS.B,
+  mapPublicIpOnLaunch: False,
+  defaultForAz: False
+}
+
+#This section will create a customer gateway
+customerGw1: EC2.CustomerGateway.new {
+  region: AWS.Us-west-2,
+  bgpAsn: 65123,
+  ipAddress: "42.42.42.42",
+  tags: [cbt],
+}
+
+customerGw2: EC2.CustomerGateway.new {
+  region: AWS.Us-west-2,
+  bgpAsn: 65123,
+  ipAddress: "42.42.42.43",
+  tags: [cbt],
+}
+
+#The following will create a VPN gateway and VPN connections.
+vpnGw: EC2.VpnGateway.new {
+  region: AWS.Us-west-2,
+  vpcAttachment: dev-vpc,
+  tags: [cbt],
+}
+
+vpnConnection1: EC2.VpnConnection.new {
+  customerGateway: customerGw1,
+  vpnGateway: vpnGw,
+  tags: [cbt],
+}
+
+vpnConnection2: EC2.VpnConnection.new {
+  customerGateway: customerGw2,
+  vpnGateway: vpnGw,
+  tags: [cbt],
+}
+
+#This section creates the routing tables and associates the table with the appropriate subnets
+
+private-route-table: EC2.RouteTable.new {
+  vpc: dev-vpc,
+  associations: [
+    private-subnet-A,
+    private-subnet-B
+  ],
+  routePropagatingVpnGateways: [vpnGw]
+}
+
+#This section creates your Security Groups
+
+cbt-sg: EC2.SecurityGroup.new {
+  description: "Allow http/s from private subnets",
+  ipPermissions: [
+  cbt-http, cbt-https, cbt-ssh,
+  ],
+  ipPermissionsEgress: None,
+  tags: [cbt],
+  vpc: dev-vpc
+}
+
+cbt-http: EC2.IpPermission.new {
+  ipProtocol: "tcp",
+  fromPort:80,
+  toPort:80,
+  target: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "10.0.64.0/20"),
+    EC2.IpRange(cidrIp: "10.0.32.0/20")
+  ])
+}
+cbt-https: EC2.IpPermission.new {
+  ipProtocol: "tcp",
+  fromPort:443,
+  toPort:443,
+  target: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "10.0.32.0/20"),
+    EC2.IpRange(cidrIp: "10.0.64.0/20")
+  ])
+}
+cbt-ssh: EC2.IpPermission.new {
+  ipProtocol: "tcp",
+  fromPort: 22,
+  toPort: 22,
+  target: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "0.0.0.0/0")
+  ])
+}
