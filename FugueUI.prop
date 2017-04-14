@@ -1,6 +1,22 @@
 label=Example 1
 description=Simple Example to create a VPC and Subnet managed by compliance server
 
+dhcp-options.type=STRING
+dhcp-options.label=DHCP Option set
+dhcp-options.description=DHCP Option set used to connect to DC's and NTP server
+
+dhcp-options.domainNameServers.type=STRING
+dhcp-options.domainNameServers.label=DC's ip's
+dhcp-options.domainNameServers.description=Ip's to DC's needed to join servers to the doamin
+
+dhcp-options.domainName.type=STRING
+dhcp-options.domainName.label=Domain Naming convention
+dhcp-options.domainName.description=Domain Naming convention to use when joining servers to the domain
+
+dhcp-options.ntpServers.type=STRING
+dhcp-options.ntpServers.label=NTP Server IP's
+dhcp-options.ntpServers.description=IP's to NTP servers
+
 vpc.type=STRING
 vpc.label=Account VPC
 vpc.description=Name of the VPC to be created for this account
@@ -32,22 +48,6 @@ subnet1.mapPublicIp.description=Do you want to map the public IP for this subnet
 subnet1.defaultForAz.type=BOOLEAN
 subnet1.defaultForAz.label=Default Subnet
 subnet1.defaultForAz.description=Do you want this to be the default subnet for this VPC?
-
-dhcp-options.type=STRING
-dhcp-options.label=DHCP Option set
-dhcp-options.description=DHCP Option set used to connect to DC's and NTP server
-
-dhcp-options.domainNameServers.type=STRING
-dhcp-options.domainNameServers.label=DC's ip's
-dhcp-options.domainNameServers.description=Ip's to DC's needed to join servers to the doamin
-
-dhcp-options.domainName.type=STRING
-dhcp-options.domainName.label=Domain Naming convention
-dhcp-options.domainName.description=Domain Naming convention to use when joining servers to the domain
-
-dhcp-options.ntpServers.type=STRING
-dhcp-options.ntpServers.label=NTP Server IP's
-dhcp-options.ntpServers.description=IP's to NTP servers
 
 customergw1.type=STRING
 customergw1.label=Customer Gateway connection
@@ -92,6 +92,22 @@ securitygroup.ipPermission.description=SG Ingress IP's and ports that are allowe
 securitygroup.ipPermissionEgress.type=IPPERMISSION
 securitygroup.ipPermissionEgress.label=SG Egress IP's and ports
 securitygroup.ipPermissionEgress.description=SG Egress IP's and ports that are allowed or explicitly denied
+
+ippermission.type=STRING
+ippermission.label=IP permissions for SG's
+ippermission.descritption=IP and port permissions for SG's
+
+ippermission.ipProtocol.type=STRING
+ippermission.ipProtocol.label=ipProtocol Name or number
+ippermission.ipProtocol.description=ipProtocol Name or number of the IP protocol for the rule, for example `TCP` or `UDP`.
+
+ippermission.fromPort.type=INT
+ippermission.fromPort.label=Low Port number allowed in SG
+ippermission.fromPort.description=The lowest port number of the port range for the permission.
+
+ippermission.toPort.type=INT
+ippermission.toPort.label=High Port number allowed in SG
+ippermission.toPort.description=The highest port number of the port range for the permission.
 
 tag.application.type=STRING
 tag.application.label=Tag(application)
