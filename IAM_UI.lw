@@ -24,7 +24,7 @@ cbt-user: IAM.Role.new {
       "Sid": "",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::183840590373:root"
+        "AWS": "arn:aws:iam::*:root"
       },
       "Action": "sts:AssumeRole"
     }
