@@ -1,0 +1,31 @@
+label=IAM Roles
+description= Template to create an IAM role with Managed Policies
+
+iammanagedpolicy.type=STRING
+iammanagedpolicy.label=Managed Policy
+iammanagedpolicy.description=Policy that allows permissions to a role it's currently attached too. 
+
+iammanagedpolicy.policyName.type=STRING
+iammanagedpolicy.policyName.label= Policy Name
+iammanagedpolicy.policyName.description=The name of the policy.
+
+iammanagedpolicy.policyDocument.type=STRING
+iammanagedpolicy.policyDocument.label=JSON policy document
+iammanagedpolicy.policyDocument.description=JSON Policy that provides action allowed in the managed policy.
+
+iammanagedpolicy.description.type=STRING
+iammanagedpolicy.description.label=Policy description
+iammanagedpolicy.description.description=Description of the policy.
+
+iamrole.type=STRING
+iamrole.label=IAM Role
+iamrole.description=IAM role, an AWS identity that delegates permission policies to whatever entity assumes the role.
+
+iamrole.roleName.type=STRING
+iamrole.roleName.label=Role name
+iamrole.roleName.descritption=The name of the role
+
+iamrole.assumeRolePolicyDocument.type=STRING
+iamrole.assumeRolePolicyDocument.label=Assume Role Policy
+iamrole.assumeRolePolicyDocument.descritption=Assume Role Policy document that allows user, service, or
+federated service to assume this role.
