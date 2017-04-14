@@ -1,13 +1,22 @@
 composition
 
 import Fugue.AWS.IAM as IAM
-import Ludwig.External as External
 
-#This creates an IAM role attaches an already exisitng IAM Managed Policy.
-fugue-users: IAM.ManagedPolicy.external("arn:aws:iam::183840590373:policy/fugue-users")
+#The following will create two managed policies. The policyDocument points to a directory I'm currently storing the .json files.
+fugue-installer: IAM.ManagedPolicy.new {
+  policyName: 'fugue-installers',
+  policyDocument: String.readFileUtf8('Policies/fugue_installer.json'),
+}
 
-fugue-user: IAM.Role.new {
-  roleName: "Fugue-User",
+fugue-user:  IAM.ManagedPolicy.new {
+  policyName: 'fugue-users',
+  policyDocument: String.readFileUtf8('Policies/fugue_user.json'),
+}
+
+#This creates an IAM role attaches IAM Managed Policies.
+
+cbt-user: IAM.Role.new {
+  roleName: "Application-User",
   assumeRolePolicyDocument: '{
   "Version": "2012-10-17",
   "Statement": [
@@ -21,5 +30,8 @@ fugue-user: IAM.Role.new {
     }
   ]
 }',
-  managedPolicies: [fugue-users],
+  managedPolicies: [
+                   fugue-user,
+                   fugue-installer
+  ],
 }
