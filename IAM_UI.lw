@@ -17,19 +17,7 @@ fugue-user:  IAM.ManagedPolicy.new {
 
 cbt-user: IAM.Role.new {
   roleName: "Application-User",
-  assumeRolePolicyDocument: '{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::*:root"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}',
+  assumeRolePolicyDocument: String.readFileUtf8('Policies/trust_policy.json'),
   managedPolicies: [
                    fugue-user,
                    fugue-installer
