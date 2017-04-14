@@ -1,0 +1,25 @@
+composition
+
+import Fugue.AWS.IAM as IAM
+import Ludwig.External as External
+
+#This creates an IAM role attaches an already exisitng IAM Managed Policy.
+fugue-users: IAM.ManagedPolicy.external("arn:aws:iam::183840590373:policy/fugue-users")
+
+fugue-user: IAM.Role.new {
+  roleName: "Fugue-User",
+  assumeRolePolicyDocument: '{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::183840590373:root"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}',
+  managedPolicies: [fugue-users],
+}
