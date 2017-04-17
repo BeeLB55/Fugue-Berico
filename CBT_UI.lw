@@ -1,0 +1,107 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.EC2 as EC2
+
+#########################
+# NETWORKS
+#########################
+
+#Create a new DHCP Options set
+${dhcp-options}: EC2.DhcpOptions.new {
+  tags: [application-tag],
+  domainNameServers: [${dhcp-options_domainNameServers}],
+  domainName: "${dhcp-options_domainName}",
+  ntpServers: [${dhcp-options_ntpServers}],
+  region: ${region}
+}
+
+${vpc}: EC2.Vpc.new {
+  cidrBlock: "${vpc_cidr}",
+  tags: [application-tag],
+  region: ${region},
+  dhcpOptions: ${dhcp-options},
+}
+
+#This will create the Subnets
+${subnet1}: EC2.Subnet.new {
+  cidrBlock: "${subnet1_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${subnet1_az},
+  mapPublicIpOnLaunch: ${subnet1_mapPublicIp},
+  defaultForAz: ${subnet1_defaultForAz}
+}
+
+${subnet2}: EC2.Subnet.new {
+  cidrBlock: "${subnet2_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${subnet2_az},
+  mapPublicIpOnLaunch: ${subnet2_mapPublicIp},
+  defaultForAz: ${subnet2_defaultForAz}
+}
+
+#This section will create a customer gateway
+${customerGw1}: EC2.CustomerGateway.new {
+  region: ${region},
+  bgpAsn: ${customerGw1_bgpAsn},
+  ipAddress: "${customerGw1_ipAddress}",
+  tags: [cbt],
+}
+
+${customerGw2}: EC2.CustomerGateway.new {
+  region: ${region},
+  bgpAsn: ${customerGw2_bgpAsn},
+  ipAddress: "${customerGw2_ipAddress}",
+  tags: [cbt],
+}
+
+#The following will create a VPN gateway and VPN connections.
+vpnGw: EC2.VpnGateway.new {
+  region: ${region},
+  vpcAttachment: ${vpc},
+  tags: [cbt],
+}
+
+${vpnConnection1}: EC2.VpnConnection.new {
+  customerGateway: ${customerGw1},
+  vpnGateway: ${vpnGw},
+  tags: [cbt],
+}
+
+${vpnConnection2}: EC2.VpnConnection.new {
+  customerGateway: ${customerGw2},
+  vpnGateway: ${vpnGw},
+  tags: [cbt],
+}
+
+#This will create the routing table
+${private-route-table1}: EC2.RouteTable.new {
+  vpc: ${vpc},
+  routePropagatingVpnGateways: [${vpnGW}]
+  associations: [
+    ${subnet1},
+    ${subnet2}
+  ]
+}
+
+#This section creates your Security Groups
+${securityGroup}: EC2.SecurityGroup.new {
+  description: "${securityGroup_description}",
+  ipPermissions: [
+    ${securityGroup_ipPermissions},
+  ],
+  ipPermissionsEgress: ${securityGroup_ipPermissionsEgress},
+  tags: [bastion-tag],
+  vpc: ${vpc}
+}
+
+${ipPermission}: EC2.IpPermission.new {
+  ipProtocol: "${ipPermission_ipProtocol}",
+  fromPort: ${ipPermission_fromPort},
+  toPort: ${ipPermission_toPort},
+  ${ipRanges}: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "${ipRange_cidrIP}")
+  ])
+}
+
+application-tag: AWS.tag("Application", "${tag_application}")
