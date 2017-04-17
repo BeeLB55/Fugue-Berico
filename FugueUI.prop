@@ -1,4 +1,4 @@
-label=Example 1
+label=Example 2
 description=CBT template that creates 2 private subnets with on premise connectivity(VPN and CGW) to base resources.
 
 dhcp-options.type=STRING
