@@ -1,0 +1,25 @@
+composition
+
+import Fugue.AWS.IAM as IAM
+
+#The following will create two managed policies. The policyDocument points to a directory I'm currently storing the .json files.
+${iammanagedpolicy1}: IAM.ManagedPolicy.new {
+  policyName: '${iammanagedpolicy1_policyName}',
+  policyDocument: String.readFileUtf8('${iammanagedpolicy1_policyDocument}'),
+}
+
+${iammanagedpolicy2}:  IAM.ManagedPolicy.new {
+  policyName: '${iammanagedpolicy2_policyName}',
+  policyDocument: String.readFileUtf8('${iammanagedpolicy2_policyDocument}'),
+}
+
+#This creates an IAM role attaches IAM Managed Policies.
+
+${iamrole}: IAM.Role.new {
+  roleName: "${iamrole_roleName}",
+  assumeRolePolicyDocument: String.readFileUtf8('${iamrole_assumeRolePolicyDocument}'),
+  managedPolicies: [
+                   ${iammanagedpolicy1},
+                   ${iammanagedpolicy2}
+  ],
+}
