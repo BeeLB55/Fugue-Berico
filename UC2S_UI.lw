@@ -61,7 +61,7 @@ ${eip}: EC2.ElasticIP.new {
   region: ${region}
 }
 
-#This section creates the routing tables and associates the table with the appropriate subnets
+#This section creates the routes
 ${pubroute}: EC2.Route.new {
     destinationCidrBlock: "${pubroute_destinationCidrBlock}",
   target: EC2.GatewayTarget(${igw})
@@ -72,7 +72,7 @@ ${privroute}: EC2.Route.new {
   target: EC2.NatTarget(${natgw})
 }
 
-#This will create the routing table
+#This will create the routing table and associates the table with the appropriate subnets
 
 ${pubroutetable}: EC2.RouteTable.new {
   vpc: ${vpc},
