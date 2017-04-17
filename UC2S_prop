@@ -1,0 +1,114 @@
+label=Example 3
+description=CBT template that creates a VPC, 1 private subnets, 1 public subnets, IGW and NATGW.
+
+vpc.type=STRING
+vpc.label=Account VPC
+vpc.description=Name of the VPC to be created for this account
+
+vpc.cidr.type=CIDR
+vpc.cidr.label=VPC CIDR Mask
+vpc.cidr.description=CIDR Mask to be used for the VPC
+
+vpc.dhcp.type=DHCP
+vpc.dhcp.label=DHCP Option set
+vpc.dhcp.description=DHCP Option set used to connect to DC's and NTP server
+
+subnet1.type=STRING
+subnet1.label=Subnet Name
+subnet1.description=Name of the first subnet for this VPC
+
+subnet1.cidr.type=CIDR
+subnet1.cidr.label=Subnet CIDR Mask
+subnet1.cidr.description=CIDR Mask to be used for this subnet
+
+subnet1.az.type=AZ
+subnet1.az.label=Subnet AZ
+subnet1.az.description=Select an AZ for this subnet
+
+pubsubnet1.mapPublicIp.type=BOOLEAN
+pubsubnet1.mapPublicIp.label=Map Public IP
+pubsubnet1.mapPublicIp.description=Do you want to map the public IP for this subnet?
+
+pubsubnet1.defaultForAz.type=BOOLEAN
+pubsubnet1.defaultForAz.label=Default Subnet
+pubsubnet1.defaultForAz.description=Do you want this to be the default subnet for this VPC?
+
+privsubnet1.mapPublicIp.type=BOOLEAN
+privsubnet1.mapPublicIp.label=Map Public IP
+privsubnet1.mapPublicIp.description=Do you want to map the public IP for this subnet?
+
+privsubnet1.defaultForAz.type=BOOLEAN
+privsubnet1.defaultForAz.label=Default Subnet
+privsubnet1.efaultForAz.description=Do you want this to be the default subnet for this VPC?
+
+igw.type=STRING
+igw.label=Internet Gateway
+igw.description=Internet Gateway can be used to allow outside internet access
+
+natgw.type=STRING
+natgw.label=NAT Gateway
+natgw.description=NAT Gateway can be used to allow outside internet access from a private subnet
+
+eip.type=STRING
+eip.label-Elastic IP
+eip.description=Elastic IP is a static IP
+
+pubroute.tyep=STRING
+pubroute.label=Public Route
+pubroute.description=A Public Route is the path that directs network traffic, for example: IGW, VGW, CGW, etc....
+
+pubroute.destinationCidrBlock.type=STRING
+pubroute.destinationCidrBlock.label=Public Route Destination CIDR Block
+pubroute.destinationCidrBlock.description=destinationCidrBlock The CIDR block of routing requests that should follow this route.
+
+privroute.type=STRING
+privroute.label=Private Route
+privroute.description=A Private Route is the path that directs network traffic, for example: NATGW, VGW, CGW, etc....
+
+privroute.destinationCidrBlock.type=STRING
+privroute.destinationCidrBlock.label=Private Route Destination CIDR Block
+privroute.destinationCidrBlock.description=destinationCidrBlock The CIDR block of routing requests that should follow this route.
+
+pubroutetable.type=STRING
+pubroutetable.label=Routing Table
+pubroutetable.description=VPC Route table to route network traffic between subnets
+
+privroutetable.type=STRING
+privroutetable.label=Routing Table
+privroutetable.description=VPC Route table to route network traffic between subnets
+
+securitygroup.type=STRING
+securitygroup.label=Security Group
+securitygroup.description-Stateless instance level firewall
+
+securitygroup.description.type=STRING
+securitygroup.description.label=Security Group description
+securitygroup.description.description=Use this section explaining what the security group is allowing/denying.
+
+securitygroup.ipPermission.type=IPPERMISSION
+securitygroup.ipPermission.label=SG Ingress Ip's and ports
+securitygroup.ipPermission.description=SG Ingress IP's and ports that are allowed or explicitly denied
+
+securitygroup.ipPermissionEgress.type=IPPERMISSION
+securitygroup.ipPermissionEgress.label=SG Egress IP's and ports
+securitygroup.ipPermissionEgress.description=SG Egress IP's and ports that are allowed or explicitly denied
+
+ippermission.type=STRING
+ippermission.label=IP permissions for SG's
+ippermission.descritption=IP and port permissions for SG's
+
+ippermission.ipProtocol.type=STRING
+ippermission.ipProtocol.label=ipProtocol Name or number
+ippermission.ipProtocol.description=ipProtocol Name or number of the IP protocol for the rule, for example `TCP` or `UDP`.
+
+ippermission.fromPort.type=INT
+ippermission.fromPort.label=Low Port number allowed in SG
+ippermission.fromPort.description=The lowest port number of the port range for the permission.
+
+ippermission.toPort.type=INT
+ippermission.toPort.label=High Port number allowed in SG
+ippermission.toPort.description=The highest port number of the port range for the permission.
+
+tag.application.type=STRING
+tag.application.label=Tag(application)
+tag.application.description=Application Tag for your resources
