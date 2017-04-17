@@ -1,0 +1,115 @@
+composition
+
+import Fugue.AWS as AWS
+import Fugue.AWS.EC2 as EC2
+
+#########################
+# NETWORKS
+#########################
+
+${vpc}: EC2.Vpc.new {
+  cidrBlock: "${vpc_cidr}",
+  tags: [application-tag],
+  region: ${region},
+}
+
+#This will create the Subnets
+${pubsubnet1}: EC2.Subnet.new {
+  cidrBlock: "${subnet1_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${pubsubnet1_az},
+  mapPublicIpOnLaunch: ${pubsubnet1_mapPublicIp},
+  defaultForAz: ${pubsubnet1_defaultForAz}
+}
+
+${pubsubnet2}: EC2.Subnet.new {
+  cidrBlock: "${subnet2_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${pubsubnet2_az},
+  mapPublicIpOnLaunch: ${pubsubnet2_mapPublicIp},
+  defaultForAz: ${pubsubnet2_defaultForAz}
+}
+
+${privsubnet1}: EC2.Subnet.new {
+  cidrBlock: "${subnet1_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${privsubnet1_az},
+  mapPublicIpOnLaunch: ${privsubnet1_mapPublicIp},
+  defaultForAz: ${privsubnet1_defaultForAz}
+}
+
+${privsubnet2}: EC2.Subnet.new {
+  cidrBlock: "${subnet2_cidr}",
+  vpc: ${vpc},
+  availabilityZone: AWS.${privsubnet2_az},
+  mapPublicIpOnLaunch: ${privsubnet2_mapPublicIp},
+  defaultForAz: ${privsubnet2_defaultForAz}
+}
+
+#This creates an IGW
+${igw}: EC2.InternetGateway.new {
+  vpc: ${vpc}
+}
+
+#This will create a new NatGateway with EIP.
+${natgw}:EC2.NatGateway.new {
+  subnet: ${pubsubnet1},
+  elasticIP: ${eip}
+}
+
+${eip}: EC2.ElasticIP.new {
+  region: ${region}
+}
+
+#This section creates the routing tables and associates the table with the appropriate subnets
+${pubroute}: EC2.Route.new {
+    destinationCidrBlock: "${pubroute_destinationCidrBlock}",
+  target: EC2.GatewayTarget(${igw})
+}
+
+${privroute}: EC2.Route.new {
+  destinationCidrBlock: "${privroute_destinationCidrBlock}",
+  target: EC2.NatTarget(${natgw})
+}
+
+#This will create the routing table
+
+${pubroutetable}: EC2.RouteTable.new {
+  vpc: ${vpc},
+  routes: [${pubroute}],
+  associations: [
+    ${pubsubnet1},
+    ${pubsubnet2}
+  ]
+}
+
+${privroutetable}: EC2.RouteTable.new {
+  vpc: ${vpc},
+  routes: [${privroute}],
+  associations: [
+    ${privsubnet1},
+    ${privsubnet2}
+  ]
+}
+
+#This section creates your Security Groups
+${securityGroup}: EC2.SecurityGroup.new {
+  description: "${securityGroup_description}",
+  ipPermissions: [
+    ${securityGroup_ipPermissions},
+  ],
+  ipPermissionsEgress: ${securityGroup_ipPermissionsEgress},
+  tags: [application-tag],
+  vpc: ${vpc}
+}
+
+${ipPermission}: EC2.IpPermission.new {
+  ipProtocol: "${ipPermission_ipProtocol}",
+  fromPort: ${ipPermission_fromPort},
+  toPort: ${ipPermission_toPort},
+  ${ipRanges}: EC2.IpRanges([
+    EC2.IpRange(cidrIp: "${ipRange_cidrIP}")
+  ])
+}
+
+application-tag: AWS.tag("Application", "${tag_application}")
