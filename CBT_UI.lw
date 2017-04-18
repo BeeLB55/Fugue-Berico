@@ -21,7 +21,7 @@ ${vpc}: EC2.Vpc.new {
   tags: [application-tag],
   region: ${region},
   dhcpOptions: ${dhcp-options},
-}
+t}
 
 #This will create the Subnets
 ${subnet1}: EC2.Subnet.new {
@@ -31,7 +31,7 @@ ${subnet1}: EC2.Subnet.new {
   mapPublicIpOnLaunch: ${subnet1_mapPublicIp},
   defaultForAz: ${subnet1_defaultForAz}
 }
-
+t 
 ${subnet2}: EC2.Subnet.new {
   cidrBlock: "${subnet2_cidr}",
   vpc: ${vpc},
@@ -71,7 +71,7 @@ ${vpnConnection1}: EC2.VpnConnection.new {
 ${vpnConnection2}: EC2.VpnConnection.new {
   customerGateway: ${customerGw2},
   vpnGateway: ${vpnGw},
-  tags: [cbt],
+b  tags: [cbt],
 }
 
 #This will create the routing table
@@ -91,7 +91,7 @@ ${securityGroup}: EC2.SecurityGroup.new {
     ${securityGroup_ipPermissions},
   ],
   ipPermissionsEgress: ${securityGroup_ipPermissionsEgress},
-  tags: [bastion-tag],
+  tags: [application-tag],
   vpc: ${vpc}
 }
 
