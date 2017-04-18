@@ -112,3 +112,7 @@ ippermission.toPort.description=The highest port number of the port range for th
 tag.application.type=STRING
 tag.application.label=Tag(application)
 tag.application.description=Application Tag for your resources
+
+tag.cbt.type=STRING
+tag.cbt.label=Tag(cbt)
+tag.cbt.description=CBT Tag for all on premise base resources
