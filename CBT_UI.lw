@@ -45,33 +45,33 @@ ${customerGw1}: EC2.CustomerGateway.new {
   region: ${region},
   bgpAsn: ${customerGw1_bgpAsn},
   ipAddress: "${customerGw1_ipAddress}",
-  tags: [cbt],
+  tags: [cbt-tag],
 }
 
 ${customerGw2}: EC2.CustomerGateway.new {
   region: ${region},
   bgpAsn: ${customerGw2_bgpAsn},
   ipAddress: "${customerGw2_ipAddress}",
-  tags: [cbt],
+  tags: [cbt-tag],
 }
 
 #The following will create a VPN gateway and VPN connections.
 vpnGw: EC2.VpnGateway.new {
   region: ${region},
   vpcAttachment: ${vpc},
-  tags: [cbt],
+  tags: [cbt-tag],
 }
 
 ${vpnConnection1}: EC2.VpnConnection.new {
   customerGateway: ${customerGw1},
   vpnGateway: ${vpnGw},
-  tags: [cbt],
+  tags: [cbt-tag],
 }
 
 ${vpnConnection2}: EC2.VpnConnection.new {
   customerGateway: ${customerGw2},
   vpnGateway: ${vpnGw},
-b  tags: [cbt],
+b  tags: [cbt-tag],
 }
 
 #This will create the routing table
@@ -105,3 +105,4 @@ ${ipPermission}: EC2.IpPermission.new {
 }
 
 application-tag: AWS.tag("Application", "${tag_application}")
+cbt-tag: AWS.tag("CBT", "${tag_cbt}")
